@@ -7,12 +7,18 @@
 	
 		ClientStore.init(160, "testdb", function(x){alert("jej " + x);}, function(){alert("bu");}, function(){alert("warn")});
 		setTimeout(function(){
-			ClientStore.setItem("test", "ttests");
+			alert("sadf");
+			ClientStore.getItem(
+				"test", 
+				"dfault", 
+				function(x){alert("Clientstore found value : " + x);}
+			);
+			//ClientStore.setItem("test", "ttests");
 		}, 50);
 		//store.setSize(300, function(x){alert("jejrezie " + x);}, function(){alert("bu");});
-		setTimeout(function(){
-			ClientStore.getSize(function(a,b){ alert("Found dize " + a + " " + b);} );
-		}, 100);
+		//setTimeout(function(){
+		//	ClientStore.getSize(function(a,b){ alert("Found dize " + a + " " + b);} );
+		//}, 100);
 		
 		//ClientStoreUtilsRemoveIndexedDB('function (x){alert("jej " + x);}');
 	</script>
