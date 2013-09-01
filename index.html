@@ -1,0 +1,22 @@
+<html>
+	<head>
+		<script src="/static/vendor/modernizr.custom.82299.js"></script>
+		<script src="clientstore.js"></script>
+	</head>
+	<script>
+	
+		ClientStore.init(160, "testdb", function(x){alert("jej " + x);}, function(){alert("bu");}, function(){alert("warn")});
+		setTimeout(function(){
+			ClientStore.setItem("test", "ttests");
+		}, 50);
+		//store.setSize(300, function(x){alert("jejrezie " + x);}, function(){alert("bu");});
+		setTimeout(function(){
+			ClientStore.getSize(function(a,b){ alert("Found dize " + a + " " + b);} );
+		}, 100);
+		
+		//ClientStoreUtilsRemoveIndexedDB('function (x){alert("jej " + x);}');
+	</script>
+<body>
+	tests
+</body>
+</html>
