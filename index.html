@@ -2,12 +2,12 @@
 	<head>
 		<script src="/static/vendor/modernizr.custom.82299.js"></script>
 		<script src="clientstore.js"></script>
+		<script src="projectstore.js"></script>
 	</head>
 	<script>
 	
 		ClientStore.init(160, "testdb", function(x){alert("jej " + x);}, function(){alert("bu");}, function(){alert("warn")});
 		setTimeout(function(){
-			alert("sadf");
 			ClientStore.getItem(
 				"test", 
 				"dfault", 
