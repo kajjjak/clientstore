@@ -1,4 +1,0 @@
-clientstore
-===========
-
-Codewip clientstore tests
