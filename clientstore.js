@@ -130,7 +130,17 @@ function ClientStoreInterfaceIndexedDB (){
         sessionStorage.setItem(n, v);
     },
     this.getItem = function (n, default_value, callback_success, callback_failure){
-    	
+			var object_store = this.getObjectStore(CLIENT_STORE_BUFFER_NAME, "readwrite");
+      object_store.get(n).onsuccess = function(event) {
+				var r = event.target.result;
+				if (r == null) {
+					callback_success(default_value);
+				  callback_failure("Could not find item with name " + n);
+				}
+				else {
+					callback_success(r);
+				}
+			};
     },
     this.removeItem = function(k){
         var request = this.getObjectStore(CLIENT_STORE_BUFFER_NAME, 'readwrite').delete(k);
@@ -171,12 +181,12 @@ var ClientStore = new function() {
      	return this.db.setItem(k, v);
     };
 
-    this.getItem = function(name, default_value, callback_success, callback_failure){
+    this.getItem = function(k, default_value, callback_success, callback_failure){
       if (default_value === undefined){default_value = null;}
       this.db.getItem(k, default_value, callback_success, callback_failure);
     };
 
-    this.removeItem = function(name){
+    this.removeItem = function(k){
       return this.db.removeItem(k);
     };
 
