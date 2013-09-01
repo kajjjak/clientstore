@@ -138,7 +138,7 @@ function ClientStoreInterfaceIndexedDB (){
 				  callback_failure("Could not find item with name " + n);
 				}
 				else {
-					callback_success(r);
+					callback_success(r.value);
 				}
 			};
     },
