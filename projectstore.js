@@ -43,10 +43,8 @@ var ProjectStore = new function() {
     	/*
     		call this._loadProjLocal with callback_failure call that will try to load from server
     	*/
-    	ClientStore.getItem("projects", project_id,
-    	function(r){
-    		callback_success(JSON.parse(r));
-    	}, 
+    	this._loadProjectLocal(project_id,
+    	callback_success, 
     	function(){
     		alert("Not found letss ask server");
     	});    	
@@ -56,6 +54,14 @@ var ProjectStore = new function() {
     	/*
     		Will check if server_project_data is the same project we are trying to open and load that if it is newer
     	*/
+    	ClientStore.getItem("projects", project_id,
+	    	function(r){
+	    		callback_success(JSON.parse(r));
+	    	}, 
+	    	function(){
+	    		callback_failure("Not found");
+	    	}
+	    );    	    	
     };
     
     this._loadProjectOnline = function(project_id, callback_success, callback_failure){
