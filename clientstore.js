@@ -9,60 +9,10 @@
 CLIENT_STORE_BUFFER_NAME = "ClientStore";
 CLIENT_STORE_DATABASE_NAME = "ClientDatabase";
 
-function ClientStoreInterfaceWebSQL (){
-    this.init = function (size_in_mb, dbname, callback_success, callback_failure){
-      	this.___local_storage_db = openDatabase(dbname, '1.0', dbname, size_in_mb * 1024 * 1024);
-        this.___local_storage_db.transaction(function(tx) {
-          tx.executeSql('CREATE TABLE IF NOT EXISTS buffer (id unique, text)', function(){
-            if(callback_success){callback_success();}
-          });
-        });
-        //var self = this;
-        //setTimeout(function(){ if (!this.___cache_copied){ self.__restoreSession(); }}, 1000);
-    },
-    this.clear = function (callback_success){
-        var sql = 'DELETE FROM buffer';
-        this.___local_storage_db.transaction(function(tx){
-            tx.executeSql(sql);
-            if(callback_success){
-                callback_success();
-            }
-        });
-    },
-    this.setSize = function(){
-    	/*not supported in websql*/
-    },
-    this.getStorageSize = function(callback_success, callback_failure){
-    	callback_failure(-1);
-    },
-    this.setItem = function (k, v){
-        this.___local_storage_db.transaction(function(tx) {tx.executeSql('INSERT INTO buffer (id, text) VALUES (?, ?)', [k, v]);});
-    },
-    this.getItem = function (k, default_value, callback_success, callback_failure){
-        var key = k;
-        var v = default_value;
-        this.___local_storage_db.transaction(function(tx) {
-            var value = v;
-            tx.executeSql('SELECT * FROM buffer WHERE id=?', [key], function(tx, results) {
-                var len = results.rows.length, i;
-                var v = value;
-                for (i = 0; i < len; i++) {
-                    v = results.rows.item(i).text;
-                }
-                if(callback_success){
-                    callback_success(v);
-                }
-            });
-        });
-    },
-    this.removeItem = function(k){
-        this.clear();
-    };
-}
 
 function ClientStoreInterfaceIndexedDB (){
     //https://developer.mozilla.org/en-US/docs/IndexedDB/Using_IndexedDB
-    this.init = function (size_in_mb, dbname, callback_success, callback_failure){
+    this.init = function (size_in_mb, dbname, tables, callback_success, callback_failure){
         window.___local_storage_db = undefined;
         var self = this;
         request = indexedDB.open(CLIENT_STORE_DATABASE_NAME);
@@ -70,14 +20,14 @@ function ClientStoreInterfaceIndexedDB (){
         request.onsuccess = function(e){
             window.___local_storage_db = e.target.result;
             if(callback_success){callback_success();}
-/*            if (window.___local_storage_db.objectStoreNames.contains("buffer")) {
-                window.___local_storage_db.deleteObjectStore("buffer");
-            }
-*/        };
+        };
         request.onupgradeneeded = function(event) {
             window.___local_storage_db = event.target.result;
-            var object_store = window.___local_storage_db.createObjectStore(client_store_buffer_name, {keyPath: "key"});
-            object_store.createIndex("value", "value", {unique: false});
+            var object_store;
+            for (var i in tables){
+	            object_store = window.___local_storage_db.createObjectStore(tables[i], {keyPath: "key"});
+	            object_store.createIndex("value", "value", {unique: false});
+            }
             if(callback_success){callback_success();}
         };
         request.onerror = function(e){
@@ -134,21 +84,79 @@ function ClientStoreInterfaceIndexedDB (){
           if(callback_failure){callback_failure();}
         };
     },
-    this.setItem = function (n, v){
-        var object_store = this.getObjectStore(CLIENT_STORE_BUFFER_NAME, "readwrite");
+    this.setItem = function (d, n, v){
+        var object_store = this.getObjectStore(d, "readwrite");
         object_store.add({"key":n, "value":v});
-        sessionStorage.setItem(n, v);
     },
-    this.getItem = function (n, default_value){
-        var v = sessionStorage.getItem(n);
-        if (v){ return v;}
-        return default_value;
+    this.getItem = function (d, n, callback_success, callback_failure){
+    	var object_store = this.getObjectStore(d, "readwrite");
+			var request = object_store.get(n);
+			request.onerror = function(event) {
+			  callback_failure();
+			  callback_success(undefined);
+			};
+			request.onsuccess = function(event) {
+			  alert("ok " + JSON.stringify(request.result));
+			  callback_success(request.result);
+			};        
     },
-    this.removeItem = function(k){
-        var request = this.getObjectStore(CLIENT_STORE_BUFFER_NAME, 'readwrite').delete(k);
+    this.removeItem = function(d, k){
+        var request = this.getObjectStore(d, 'readwrite').delete(k);
         request.onsuccess = function(event) {
           console.info("ClientStoreInterfaceIndexedDB: removed item " + k);
         };
+    };
+}
+
+
+function ClientStoreInterfaceWebSQL (){
+    this.init = function (size_in_mb, dbname, callback_success, callback_failure){
+      	this.___local_storage_db = openDatabase(dbname, '1.0', dbname, size_in_mb * 1024 * 1024);
+        this.___local_storage_db.transaction(function(tx) {
+          tx.executeSql('CREATE TABLE IF NOT EXISTS buffer (id unique, text)', function(){
+            if(callback_success){callback_success();}
+          });
+        });
+        //var self = this;
+        //setTimeout(function(){ if (!this.___cache_copied){ self.__restoreSession(); }}, 1000);
+    },
+    this.clear = function (callback_success){
+        var sql = 'DELETE FROM buffer';
+        this.___local_storage_db.transaction(function(tx){
+            tx.executeSql(sql);
+            if(callback_success){
+                callback_success();
+            }
+        });
+    },
+    this.setSize = function(){
+    	/*not supported in websql*/
+    },
+    this.getStorageSize = function(callback_success, callback_failure){
+    	callback_failure(-1);
+    },
+    this.setItem = function (k, v){
+        this.___local_storage_db.transaction(function(tx) {tx.executeSql('INSERT INTO buffer (id, text) VALUES (?, ?)', [k, v]);});
+    },
+    this.getItem = function (k, default_value, callback_success, callback_failure){
+        var key = k;
+        var v = default_value;
+        this.___local_storage_db.transaction(function(tx) {
+            var value = v;
+            tx.executeSql('SELECT * FROM buffer WHERE id=?', [key], function(tx, results) {
+                var len = results.rows.length, i;
+                var v = value;
+                for (i = 0; i < len; i++) {
+                    v = results.rows.item(i).text;
+                }
+                if(callback_success){
+                    callback_success(v);
+                }
+            });
+        });
+    },
+    this.removeItem = function(k){
+        this.clear();
     };
 }
 
