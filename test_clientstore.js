@@ -4,7 +4,10 @@ describe("ClientStoreInterfaceIndexedDB, ", function() {
 	beforeEach(function() {
 		window.clientStoreInterfaceIndexedDB = new ClientStoreInterfaceIndexedDB();
 		window.clientStoreInterfaceIndexedDB.init(50, CLIENT_STORE_DATABASE_NAME, ["test_table"], function(){
-			window.clientstore_indexeddb_ready = true;
+			setTimeout(function(){
+				window.clientstore_indexeddb_ready = true;	
+			}, 500);
+			
 		}, function(){
 			alert("Could not create indexddb");
 		}, ClientStore.USE_INDEXEDDB);
