@@ -186,22 +186,6 @@ var ClientStore = new function() {
        	}
         this.db.init(size_in_mb, db_name, tables, callback_success, callback_failure);
     };
-    
-    this.__removeItem = function(k){
-        window.localStorage.removeItem(k);
-        this.db.removeItem(k);
-    };
-
-    this.__getItem = function(k, default_value, callback_success, callback_failure){
-        var v = window.localStorage.getItem(k);
-        if(v && (v.length > 1)) {if(callback_success){callback_success(v);} return v;}
-        return this.db.getItem(k, default_value, callback_success, callback_failure);
-    };
-    
-    this.__getSizeUsed = function(){
-        //return JSON.stringify(localStorage).length;
-        return unescape(encodeURIComponent(JSON.stringify(localStorage))).length;
-    };
 
     this.setSize = function(size_in_megabites, callback_success, callback_failure){
     	if(this.db){
@@ -223,8 +207,8 @@ var ClientStore = new function() {
     	this.db.getItem(d, k, callback_success, callback_failure);
     };
 
-    this.removeItem = function(name){
-        return this.__removeItem(name);
+    this.removeItem = function(k){
+        this.db.removeItem(k);
     };
 
     this.clear = function(except_values){
@@ -232,7 +216,7 @@ var ClientStore = new function() {
     };
 
     this.getSizeUsed = function(){
-        return this.__getSizeUsed();
+        return unescape(encodeURIComponent(JSON.stringify(localStorage))).length;
     };
     
 };
