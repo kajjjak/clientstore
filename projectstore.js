@@ -2,15 +2,29 @@
 Uses clientstore.js for local storage of projects and interfaces with Codewip web service api 
 */
 var ProjectStore = new function() {
-    this.init = function(size_in_mb, callback_success, callback_failure, callback_warning){
+    	this.init = function(size_in_mb, callback_success, callback_failure, callback_warning){
     };
     
     this.saveFile = function(obj){
-    	//creates a history and saves file
+    	/*
+    		Should save all open files
+    	*/
     	
     };
     
-    this.loadFile = function(callback_success){
+    this.cacheFile = function(obj){
+    	/*
+    		Should save the file with state close
+    	*/
+    };
+    
+    this.closeFile = function(obj){
+    	/*
+    		Should save the file with state close
+    	*/
+    }
+    
+    this.openFile = function(file_id, callback_success){
     	
     };
     
@@ -18,8 +32,27 @@ var ProjectStore = new function() {
     	//creates a history and saves file
     };
     
-    this.loadProj = function(callback_success){
-    	
+    this.closeProj = function(obj){
+    	/* Will save the project */
+    	this.saveProj(obj);
     };
+    
+    this.openProj = function(project_id, callback_success, callback_failure){
+    	/*
+    		call this._loadProjLocal with callback_failure call that will try to load from server
+    	*/
+    };
+    
+    this._loadProjLocal = function(project_id, callback_success, callback_failure){
+    	/*
+    		Will check if server_project_data is the same project we are trying to open and load that if it is newer
+    	*/
+    };
+    
+    this._loadProjOnline = function(project_id, callback_success, callback_failure){
+    	/*
+    		Loads the project online and save locally and then calls _loadProjLocal
+    	*/
+    }    
     
 };
