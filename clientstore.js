@@ -80,19 +80,18 @@ function ClientStoreInterfaceIndexedDB (){
     },
     this.setItem = function (d, n, v){
         var object_store = this.getObjectStore(d, "readwrite");
-        object_store.add({"key":n, "value":v});
+        object_store.add({"key":n, "value": v});
     },
     this.getItem = function (d, n, callback_success, callback_failure){
     	var object_store = this.getObjectStore(d, "readwrite");
 			var request = object_store.get(n);
-			debugger;
 			request.onerror = function(event) {
 			  callback_failure();
 			  callback_success(undefined);
 			};
 			request.onsuccess = function(event) {
 			  alert("ok " + JSON.stringify(request.result));
-			  callback_success(request.result);
+			  callback_success(request.result.value);
 			};        
     },
     this.removeItem = function(d, k){
