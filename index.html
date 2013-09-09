@@ -1,28 +1,72 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+  "http://www.w3.org/TR/html4/loose.dtd">
 <html>
-	<head>
-		<script src="/static/vendor/modernizr.custom.82299.js"></script>
-		<script src="clientstore.js"></script>
-		<script src="projectstore.js"></script>
-	</head>
-	<script>
-	
-		ClientStore.init(160, "testdb", function(x){alert("jej " + x);}, function(){alert("bu");}, function(){alert("warn")});
-		setTimeout(function(){
-			ClientStore.getItem(
-				"test", 
-				"dfault", 
-				function(x){alert("Clientstore found value : " + x);}
-			);
-			//ClientStore.setItem("test", "ttests");
-		}, 50);
-		//store.setSize(300, function(x){alert("jejrezie " + x);}, function(){alert("bu");});
-		//setTimeout(function(){
-		//	ClientStore.getSize(function(a,b){ alert("Found dize " + a + " " + b);} );
-		//}, 100);
-		
-		//ClientStoreUtilsRemoveIndexedDB('function (x){alert("jej " + x);}');
-	</script>
+<head>
+  <title>Jasmine Spec Runner</title>
+
+  <link rel="shortcut icon" type="image/png" href="/static/tests/jasmine/1.3.1/jasmine_favicon.png">
+  <link rel="stylesheet" type="text/css" href="/static/tests/jasmine/1.3.1/jasmine.css">
+
+  <script src="/vendor/jquery/1.8.2/jquery.js"></script>
+
+  <script type="text/javascript" src="/static/tests/jasmine/1.3.1/jasmine.js"></script>
+  <script type="text/javascript" src="/static/tests/jasmine/1.3.1/jasmine-html.js"></script>
+
+  <script src="/static/vendor/modernizr.custom.82299.js"></script>
+  <script src="/static/vendor/github/lib/base64.js"></script>
+  <script src="/static/vendor/github/lib/underscore-min.js"></script>
+  <script src="/static/vendor/github/github.js"></script>
+
+  <!-- include source files here... -->
+  <script type="text/javascript" src="/static/js/cachestore.js"></script>
+  <script type="text/javascript" src="/static/js/files.js"></script>
+  <script type="text/javascript" src="/static/js/projects.js"></script>
+  <script type="text/javascript" src="/static/js/io/io_couchdb.js"></script>
+  <script type="text/javascript" src="/static/js/io/io_github.js"></script>
+
+  <script type="text/javascript" src="clientstore.js"></script>
+  <script type="text/javascript" src="projectstore.js"></script>
+
+	<!-- include spec files here...
+  <script type="text/javascript" src="/static/tests/test_files.js"></script>
+  <script type="text/javascript" src="/static/tests/test_projects.js"></script>
+  <script type="text/javascript" src="/static/tests/test_io_github.js"></script>
+  <script type="text/javascript" src="/static/tests/test_io_couchdb.js"></script>
+  <script type="text/javascript" src="/static/tests/test_cachestore.js"></script>  
+   -->
+  <script type="text/javascript" src="test_projectstore.js"></script>
+  <script type="text/javascript">
+    (function() {
+      var jasmineEnv = jasmine.getEnv();
+      jasmineEnv.updateInterval = 1000;
+
+      var htmlReporter = new jasmine.HtmlReporter();
+
+      jasmineEnv.addReporter(htmlReporter);
+
+      jasmineEnv.specFilter = function(spec) {
+        return htmlReporter.specFilter(spec);
+      };
+
+      var currentWindowOnload = window.onload;
+
+      window.onload = function() {
+        if (currentWindowOnload) {
+          currentWindowOnload();
+        }
+        execJasmine();
+      };
+
+      function execJasmine() {
+        jasmineEnv.execute();
+      }
+
+    })();
+
+  </script>
+
+</head>
+
 <body>
-	tests
 </body>
 </html>
