@@ -4,6 +4,7 @@ function createProjectDB(){
 	setTimeout(function(){
 
 		ProjectStore.init(50, function(){
+			console.info("Created db");
 			setTimeout(function(){
 				window.projectstore_indexeddb_ready = true;	
 			}, 500);
@@ -26,6 +27,7 @@ describe("ProjectStore", function() {
   	createProjectDB();
   	waitsFor(function() { return window.projectstore_indexeddb_ready; });
     runs(function(){
+    	console.info("Runs Save/Open local project");
     	ProjectStore.saveProject({uid:"myid", data:"mydata"});
     	window.project_result = undefined;
     	ProjectStore._loadProjectLocal("myid", function(res){
