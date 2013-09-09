@@ -90,7 +90,6 @@ function ClientStoreInterfaceIndexedDB (){
 			  callback_success(undefined);
 			};
 			request.onsuccess = function(event) {
-			  alert("ok " + JSON.stringify(request.result));
 			  callback_success(request.result.value);
 			};        
     },
@@ -166,13 +165,20 @@ var ClientStore = new function() {
 
     this.___local_storage_db = undefined;
     this.___cache_copied = false;
-
-    this.init = function(size_in_mb, db_name, tables, callback_success, callback_failure, callback_warning){
+		this.USE_DB_INDEXEDDB = 1;
+		this.USE_DB_WEBSQLDB = 2;
+    this.init = function(size_in_mb, db_name, tables, callback_success, callback_failure, callback_warning, use_db){
         var self = this;        
-        if (Modernizr.indexeddb){
+       	var use_db_indexeddb = Modernizr.indexeddb;
+       	var use_db_websqldatabase = Modernizr.websqldatabase;
+       	if(use_db){       		
+       		use_db_indexeddb = (use_db == this.USE_DB_INDEXEDDB);
+       		use_db_websqldatabase = (use_db == this.USE_DB_WEBSQLDB);
+       	}
+        if (use_db_indexeddb){
           this.db = new ClientStoreInterfaceIndexedDB();
         }else{
-        	if(Modernizr.websqldatabase){
+        	if(use_db_websqldatabase){
             this.db = new ClientStoreInterfaceWebSQL();
         	}else{
         		if(callback_warning){callback_warning("store could not find extended storage");}
