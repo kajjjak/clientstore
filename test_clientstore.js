@@ -1,14 +1,17 @@
+CLIENT_STORE_DATABASE_NAME = "test_db";
 
 describe("ClientStoreInterfaceIndexedDB, ", function() {
 	beforeEach(function() {
 		window.clientStoreInterfaceIndexedDB = new ClientStoreInterfaceIndexedDB();
-		window.clientStoreInterfaceIndexedDB.init(50, "test_db", ["test_table"], function(){
+		window.clientStoreInterfaceIndexedDB.init(50, CLIENT_STORE_DATABASE_NAME, ["test_table"], function(){
 			window.clientstore_indexeddb_ready = true;
-		}, null, ClientStore.USE_INDEXEDDB);
+		}, function(){
+			alert("Could not create indexddb");
+		}, ClientStore.USE_INDEXEDDB);
   });
 
   afterEach(function() {
-  	//ClientStoreUtilsRemoveIndexedDB(CLIENT_STORE_DATABASE_NAME);
+  	ClientStoreUtilsRemoveIndexedDB(CLIENT_STORE_DATABASE_NAME);
   });	
   
   it("Set/Get item", function() {
