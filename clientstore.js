@@ -7,6 +7,7 @@
 
 
 CLIENT_STORE_BUFFER_NAME = "ClientStore";
+CLIENT_STORE_DATABASE_NAME = "ClientDatabase";
 
 function ClientStoreInterfaceWebSQL (){
     this.init = function (size_in_mb, dbname, callback_success, callback_failure){
@@ -64,7 +65,8 @@ function ClientStoreInterfaceIndexedDB (){
     this.init = function (size_in_mb, dbname, callback_success, callback_failure){
         window.___local_storage_db = undefined;
         var self = this;
-        request = indexedDB.open(dbname);
+        request = indexedDB.open(CLIENT_STORE_DATABASE_NAME);
+        var client_store_buffer_name = dbname;
         request.onsuccess = function(e){
             window.___local_storage_db = e.target.result;
             if(callback_success){callback_success();}
@@ -74,7 +76,7 @@ function ClientStoreInterfaceIndexedDB (){
 */        };
         request.onupgradeneeded = function(event) {
             window.___local_storage_db = event.target.result;
-            var object_store = window.___local_storage_db.createObjectStore(CLIENT_STORE_BUFFER_NAME, {keyPath: "key"});
+            var object_store = window.___local_storage_db.createObjectStore(client_store_buffer_name, {keyPath: "key"});
             object_store.createIndex("value", "value", {unique: false});
             if(callback_success){callback_success();}
         };
@@ -163,7 +165,7 @@ var ClientStore = new function() {
     this.___local_storage_db = undefined;
     this.___cache_copied = false;
 
-    this.init = function(size_in_mb, callback_success, callback_failure, callback_warning){
+    this.init = function(size_in_mb, db_name, callback_success, callback_failure, callback_warning){
         var self = this;        
         if (Modernizr.indexeddb){
           this.db = new ClientStoreInterfaceIndexedDB();
@@ -174,19 +176,7 @@ var ClientStore = new function() {
         		if(callback_warning){callback_warning("store could not find extended storage");}
         	}
        	}
-        this.db.init(size_in_mb, callback_success, callback_failure);
-    };
-    
-    this.setSize = function(size_in_megabites, callback_success, callback_failure){
-    	if(this.db){
-    		this.db.setSize(size_in_megabites, callback_success, callback_failure);
-    	}
-    };
-    
-    this.getSize = function(callback_success, callback_failure){
-    	if(this.db){
-    		this.db.getStorageSize(callback_success, callback_failure);
-    	}
+        this.db.init(size_in_mb, db_name, callback_success, callback_failure);
     };
 
     this.__restoreSession = function(){
@@ -261,16 +251,24 @@ var ClientStore = new function() {
             this.__setItem(n, tmp_cache[n]);
         }
     };
-
-    this.getSizeUsed = function(){
-        return this.__getSizeUsed();
-    };
-
+    
     this.__getSizeUsed = function(){
         //return JSON.stringify(localStorage).length;
         return unescape(encodeURIComponent(JSON.stringify(localStorage))).length;
     };
 
+    this.setSize = function(size_in_megabites, callback_success, callback_failure){
+    	if(this.db){
+    		this.db.setSize(size_in_megabites, callback_success, callback_failure);
+    	}
+    };
+    
+    this.getSize = function(callback_success, callback_failure){
+    	if(this.db){
+    		this.db.getStorageSize(callback_success, callback_failure);
+    	}
+    };
+    
     this.setItem = function(name, value){
         return this.__setItem(name, value);
     };
@@ -287,6 +285,11 @@ var ClientStore = new function() {
     this.clear = function(except_values){
         this.__clear(except_values);
     };
+
+    this.getSizeUsed = function(){
+        return this.__getSizeUsed();
+    };
+    
 };
 
 function ClientStoreUtilsRemoveIndexedDB(databaseName){
