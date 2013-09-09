@@ -3,7 +3,7 @@ Uses clientstore.js for local storage of projects and interfaces with Codewip we
 */
 var ProjectStore = new function() {
     this.init = function(size_in_mb, callback_success, callback_failure){
-    	ClientStore.init(size_in_mb, "codewip", ["cw_projects", "cw_openfiles", "cw_history"], callback_success, callback_failure);
+    	ClientStore.init(size_in_mb, "codewip", ["projects", "openfiles", "history"], callback_success, callback_failure);
     };
     
     this.saveFile = function(obj){
@@ -29,28 +29,36 @@ var ProjectStore = new function() {
     	
     };
     
-    this.saveProj = function(obj){
-    	//creates a history and saves file
+    this.saveProject = function(obj){
+    	if (!obj.uid){ throw "ProjectStore.saveProject expected a .uid in object"; }
+    	ClientStore.setItem("projects", obj.uid, JSON.stringify(obj));
     };
     
-    this.closeProj = function(obj){
+    this.closeProject = function(obj){
     	/* Will save the project */
     	this.saveProj(obj);
     };
     
-    this.openProj = function(project_id, callback_success, callback_failure){
+    this.openProject = function(project_id, callback_success, callback_failure){
     	/*
     		call this._loadProjLocal with callback_failure call that will try to load from server
     	*/
+    	ClientStore.getItem("projects", project_id,
+    	function(r){
+    		callback_success(JSON.parse(r));
+    	}, 
+    	function(){
+    		alert("Not found letss ask server");
+    	});    	
     };
     
-    this._loadProjLocal = function(project_id, callback_success, callback_failure){
+    this._loadProjectLocal = function(project_id, callback_success, callback_failure){
     	/*
     		Will check if server_project_data is the same project we are trying to open and load that if it is newer
     	*/
     };
     
-    this._loadProjOnline = function(project_id, callback_success, callback_failure){
+    this._loadProjectOnline = function(project_id, callback_success, callback_failure){
     	/*
     		Loads the project online and save locally and then calls _loadProjLocal on success (note that this can be a everlasing loop)
     	*/
