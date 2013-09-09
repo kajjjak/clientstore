@@ -80,12 +80,13 @@ describe("ClientStore, ", function() {
     	window.result = undefined;
     	ClientStore.removeItem("test_clientstore_table", "my_item_a");
     	setTimeout(function(){
-	    	ClientStore.getItem("test_clientstore_table", "my_item_a", function(res){
+	    	ClientStore.getItem("test_clientstore_table", "my_item_a", 
+	    	function(res){
 					window.result = "found it";
 	    	},function(){
 	    		window.result = "did not found it";
 	    	});  		
-    	}, 500);
+    	}, 1000);
     });
     waitsFor(function() { return window.clientstore_indexeddb_ready && window.result });
     runs(function(){
