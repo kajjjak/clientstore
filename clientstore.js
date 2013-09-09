@@ -87,14 +87,17 @@ function ClientStoreInterfaceIndexedDB (){
 			var request = object_store.get(n);
 			request.onerror = function(event) {
 			  callback_failure();
-			  callback_success(undefined);
 			};
 			request.onsuccess = function(event) {
-			  callback_success(request.result.value);
+			  if (request.result){callback_success(request.result.value);}
+			  else {callback_failure(undefined);}
 			};        
     },
     this.removeItem = function(d, k){
         var request = this.getObjectStore(d, 'readwrite').delete(k);
+        request.onerror = function(event) {
+          console.info("ClientStoreInterfaceIndexedDB: error removing item " + k);
+        };
         request.onsuccess = function(event) {
           console.info("ClientStoreInterfaceIndexedDB: removed item " + k);
         };
@@ -148,7 +151,7 @@ function ClientStoreInterfaceWebSQL (){
             });
         });
     },
-    this.removeItem = function(k){
+    this.removeItem = function(d, k){
         this.clear();
     };
 }
@@ -207,8 +210,8 @@ var ClientStore = new function() {
     	this.db.getItem(d, k, callback_success, callback_failure);
     };
 
-    this.removeItem = function(k){
-        this.db.removeItem(k);
+    this.removeItem = function(d, k){
+        this.db.removeItem(d, k);
     };
 
     this.clear = function(except_values){
