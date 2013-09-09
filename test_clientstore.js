@@ -1,5 +1,5 @@
 
-describe("ClientStoreInterfaceIndexedDB, ", function() {
+describe("ClientStoreInterfaceIndexedDB", function() {
 	beforeEach(function() {
 		window.clientStoreInterfaceIndexedDB = new ClientStoreInterfaceIndexedDB();
 		window.clientStoreInterfaceIndexedDB.init(50, "test_clientStoreInterfaceIndexedDB", ["test_table"], function(){
@@ -50,7 +50,7 @@ function createDB(){
 	}, 500);	
 }
 
-describe("ClientStore, ", function() {
+describe("ClientStore", function() {
 	beforeEach(function() {
   });
 
