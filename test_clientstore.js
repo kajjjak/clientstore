@@ -33,8 +33,11 @@ describe("ClientStoreInterfaceIndexedDB, ", function() {
   });
 });
 
-describe("ClientStore, ", function() {
-	beforeEach(function() {
+function createDB(){
+	ClientStoreUtilsRemoveIndexedDB("test_clientstore");
+	window.clientstore_indexeddb_ready = false;	
+	setTimeout(function(){
+
 		ClientStore.init(50, "test_clientstore", ["test_clientstore_table"], function(){
 			setTimeout(function(){
 				window.clientstore_indexeddb_ready = true;	
@@ -43,13 +46,19 @@ describe("ClientStore, ", function() {
 		}, function(){
 			alert("Could not create indexddb");
 		}, ClientStore.USE_INDEXEDDB);
+
+	}, 500);	
+}
+
+describe("ClientStore, ", function() {
+	beforeEach(function() {
   });
 
   afterEach(function() {
-  	ClientStoreUtilsRemoveIndexedDB("test_clientstore");
   });	
   
   it("Set/Get item", function() {
+  	createDB();
   	waitsFor(function() { return window.clientstore_indexeddb_ready; });
     runs(function(){
     	ClientStore.setItem("test_clientstore_table", "my_item_a", "Aa");
@@ -62,6 +71,25 @@ describe("ClientStore, ", function() {
     runs(function(){
     	expect(window.result).toEqual("Aa");
     });
-    
+  });
+  
+  it("Clear item", function() {
+
+  	waitsFor(function() { return window.clientstore_indexeddb_ready; });
+    runs(function(){
+    	window.result = undefined;
+    	ClientStore.removeItem("test_clientstore_table", "my_item_a");
+    	setTimeout(function(){
+	    	ClientStore.getItem("test_clientstore_table", "my_item_a", function(res){
+					window.result = "found it";
+	    	},function(){
+	    		window.result = "did not found it";
+	    	});  		
+    	}, 500);
+    });
+    waitsFor(function() { return window.clientstore_indexeddb_ready && window.result });
+    runs(function(){
+    	expect(window.result).toEqual("did not found it");
+    });
   });
 });
