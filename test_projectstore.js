@@ -15,20 +15,20 @@ function createProjectDB(){
 	}, 500);	
 }
 
-describe("ProjectStore, ", function() {
+describe("ProjectStore", function() {
 	beforeEach(function() {
   });
 
   afterEach(function() {
   });	
   
-  it("Set/Get item", function() {
+  it("Save/Open local project", function() {
   	createProjectDB();
   	waitsFor(function() { return window.projectstore_indexeddb_ready; });
     runs(function(){
     	ProjectStore.saveProject({uid:"myid", data:"mydata"});
     	window.project_result = undefined;
-    	ProjectStore.openProject("myid", function(res){
+    	ProjectStore._loadProjectLocal("myid", function(res){
 				window.project_result = res;    		
     	});
     });
