@@ -37,5 +37,21 @@ describe("ProjectStore", function() {
     	expect(window.project_result).toEqual({uid:"myid", data:"mydata"});
     });
   });
+  
+  it("Save/Open local file", function() {
+  	window.file_result = undefined;
+  	waitsFor(function() { return window.projectstore_indexeddb_ready; });
+    runs(function(){
+    	ProjectStore.saveFile({uid:"myfileid", data:"mydata"});
+    	window.file_result = undefined;
+    	ProjectStore.openFile("myfileid", function(res){
+				window.file_result = res;    		
+    	});
+    });
+    waitsFor(function() { return window.projectstore_indexeddb_ready && window.file_result });
+    runs(function(){
+    	expect(window.file_result).toEqual({uid:"myfileid", data:"mydata"});
+    });
+  });
 
 });
