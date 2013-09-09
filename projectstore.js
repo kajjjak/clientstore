@@ -50,6 +50,11 @@ var ProjectStore = new function() {
     	this.saveProj(obj);
     };
     
+    this._cacheProject = function(obj){
+    	/* Takes a project and stores the project files into cache*/
+    	
+    };
+    
     this.openProject = function(project_id, callback_success, callback_failure){
     	/*
     		call this._loadProjLocal with callback_failure call that will try to load from server
@@ -68,7 +73,8 @@ var ProjectStore = new function() {
     	*/
     	ClientStore.getItem("projects", project_id,
 	    	function(r){
-	    		callback_success(JSON.parse(r));
+	    		var p = JSON.parse(r);
+	    		callback_success(p.meta, p.files, p.deploy);
 	    	}, 
 	    	function(){
 	    		callback_failure("Not found");
