@@ -26,15 +26,15 @@ describe("ProjectStore, ", function() {
   	createProjectDB();
   	waitsFor(function() { return window.projectstore_indexeddb_ready; });
     runs(function(){
-    	ClientStore.setItem("cw_projects", "my_item_a", "Aa");
+    	ProjectStore.saveProject({uid:"myid", data:"mydata"});
     	window.project_result = undefined;
-    	ClientStore.getItem("cw_projects", "my_item_a", function(res){
+    	ProjectStore.openProject("myid", function(res){
 				window.project_result = res;    		
     	});
     });
     waitsFor(function() { return window.projectstore_indexeddb_ready && window.project_result });
     runs(function(){
-    	expect(window.project_result).toEqual("Aa");
+    	expect(window.project_result).toEqual({uid:"myid", data:"mydata"});
     });
   });
 
