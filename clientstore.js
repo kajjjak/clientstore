@@ -167,7 +167,7 @@ var ClientStore = new function() {
     this.___local_storage_db = undefined;
     this.___cache_copied = false;
 
-    this.init = function(size_in_mb, db_name, callback_success, callback_failure, callback_warning){
+    this.init = function(size_in_mb, db_name, tables, callback_success, callback_failure, callback_warning){
         var self = this;        
         if (Modernizr.indexeddb){
           this.db = new ClientStoreInterfaceIndexedDB();
@@ -178,51 +178,9 @@ var ClientStore = new function() {
         		if(callback_warning){callback_warning("store could not find extended storage");}
         	}
        	}
-        this.db.init(size_in_mb, db_name, callback_success, callback_failure);
+        this.db.init(size_in_mb, db_name, tables, callback_success, callback_failure);
     };
-
-    this.__restoreSession = function(){
-        this.___cache_copied = true;
-        this.___local_storage_db.transaction(function(tx) {
-            tx.executeSql('SELECT * FROM buffer', [], function(tx, results) {
-              var len = results.rows.length, i;
-              for (i = 0; i < len; i++) {
-                var k = results.rows.item(i).id;
-                var v = results.rows.item(i).text;
-                console.info(v);
-                sessionStorage.setItem(k, v);
-              }
-            });
-        });
-    };
-
-    this.__clearDB = function(){
-        this.db.clear();
-    };
-
-    this.__setItemDB = function(k, v){
-        this.db.setItem(k,v);
-    };
-
-    this.__setItem = function(k, v){
-    	this.__setItemDB(k, v); //for our offline backup
-    	/*
-        try{
-            window.localStorage.setItem(k, v);
-            //console.info("store: Using primary store for " + k);
-        } catch(e) {
-            try{
-                this.__setItemDB(k, v); //for our offline backup
-                try{sessionStorage.setItem(k, v);}
-                catch(err){}
-                //console.info("store: Using secondary store for " + k);
-            } catch(err){
-                console.info("store: Cache is full ");
-            }
-        }
-       */
-    };
-
+    
     this.__removeItem = function(k){
         window.localStorage.removeItem(k);
         this.db.removeItem(k);
@@ -232,26 +190,6 @@ var ClientStore = new function() {
         var v = window.localStorage.getItem(k);
         if(v && (v.length > 1)) {if(callback_success){callback_success(v);} return v;}
         return this.db.getItem(k, default_value, callback_success, callback_failure);
-    };
-
-    this.__clear = function(except_values){
-        tmp_cache = {};
-        var n;
-        for (var i in except_values){
-            n = except_values[i];
-            var v = this.__getItem(n);
-            if (v){
-                tmp_cache[n] = v;
-            }
-        }
-        window.localStorage.clear();
-        window.sessionStorage.clear();
-        this.__clearDB();
-        //restore values
-        for (i in except_values){
-            n = except_values[i];
-            this.__setItem(n, tmp_cache[n]);
-        }
     };
     
     this.__getSizeUsed = function(){
@@ -271,13 +209,12 @@ var ClientStore = new function() {
     	}
     };
     
-    this.setItem = function(name, value){
-        return this.__setItem(name, value);
+    this.setItem = function(d, k, v){
+        this.db.setItem(d, k, v);
     };
 
-    this.getItem = function(name, default_value, callback_success, callback_failure){
-        if (default_value === undefined){default_value = null;}
-        //return this.__getItem(name, default_value, callback_success, callback_failure);
+    this.getItem = function(d, k, callback_success, callback_failure){
+    	this.db.getItem(d, k, callback_success, callback_failure);
     };
 
     this.removeItem = function(name){
@@ -285,7 +222,7 @@ var ClientStore = new function() {
     };
 
     this.clear = function(except_values){
-        this.__clear(except_values);
+        this.db.clear();
     };
 
     this.getSizeUsed = function(){
