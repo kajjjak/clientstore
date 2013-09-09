@@ -1,4 +1,11 @@
-describe("A suite", function() {
+describe("Project store, ", function() {
+	beforeEach(function() {
+		
+  });
+
+  afterEach(function() {
+  });	
+  
   it("contains spec with an expectation", function() {
     expect(true).toBe(false);
   });
