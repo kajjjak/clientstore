@@ -20,14 +20,14 @@ describe("ClientStoreInterfaceIndexedDB, ", function() {
   	waitsFor(function() { return window.clientstore_clientStoreInterfaceIndexedDB_ready; });
     runs(function(){
     	window.clientStoreInterfaceIndexedDB.setItem("test_table", "item_a", "A");
-    	window.result = undefined;
+    	window.client_result = undefined;
     	window.clientStoreInterfaceIndexedDB.getItem("test_table", "item_a", function(res){
-				window.result = res;    		
+				window.client_result = res;    		
     	});
     });
-    waitsFor(function() { return window.clientstore_clientStoreInterfaceIndexedDB_ready && window.result });
+    waitsFor(function() { return window.clientstore_clientStoreInterfaceIndexedDB_ready && window.client_result });
     runs(function(){
-    	expect(window.result).toEqual("A");
+    	expect(window.client_result).toEqual("A");
     });
     
   });
@@ -62,14 +62,14 @@ describe("ClientStore, ", function() {
   	waitsFor(function() { return window.clientstore_indexeddb_ready; });
     runs(function(){
     	ClientStore.setItem("test_clientstore_table", "my_item_a", "Aa");
-    	window.result = undefined;
+    	window.client_result = undefined;
     	ClientStore.getItem("test_clientstore_table", "my_item_a", function(res){
-				window.result = res;    		
+				window.client_result = res;    		
     	});
     });
-    waitsFor(function() { return window.clientstore_indexeddb_ready && window.result });
+    waitsFor(function() { return window.clientstore_indexeddb_ready && window.client_result });
     runs(function(){
-    	expect(window.result).toEqual("Aa");
+    	expect(window.client_result).toEqual("Aa");
     });
   });
   
@@ -77,20 +77,20 @@ describe("ClientStore, ", function() {
 
   	waitsFor(function() { return window.clientstore_indexeddb_ready; });
     runs(function(){
-    	window.result = undefined;
+    	window.client_result = undefined;
     	ClientStore.removeItem("test_clientstore_table", "my_item_a");
     	setTimeout(function(){
 	    	ClientStore.getItem("test_clientstore_table", "my_item_a", 
 	    	function(res){
-					window.result = "found it";
+					window.client_result = "found it";
 	    	},function(){
-	    		window.result = "did not found it";
+	    		window.client_result = "did not found it";
 	    	});  		
     	}, 1000);
     });
-    waitsFor(function() { return window.clientstore_indexeddb_ready && window.result });
+    waitsFor(function() { return window.clientstore_indexeddb_ready && window.client_result });
     runs(function(){
-    	expect(window.result).toEqual("did not found it");
+    	expect(window.client_result).toEqual("did not found it");
     });
   });
 });
