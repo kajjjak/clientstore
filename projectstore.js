@@ -74,7 +74,7 @@ var ProjectStore = new function() {
     	ClientStore.getItem("projects", project_id,
 	    	function(r){
 	    		var p = JSON.parse(r);
-	    		callback_success(p.meta, p.files, p.deploy);
+	    		callback_success(p);
 	    	}, 
 	    	function(){
 	    		callback_failure("Not found");
