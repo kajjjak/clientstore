@@ -33,9 +33,9 @@ describe("ClientStoreInterfaceIndexedDB, ", function() {
   });
 });
 
-describe("ClientStoreInterfaceIndexedDB, ", function() {
+describe("ClientStore, ", function() {
 	beforeEach(function() {
-		ClientStore.init(50, "test_clientstore", ["test_table"], function(){
+		ClientStore.init(50, "test_clientstore", ["test_clientstore_table"], function(){
 			setTimeout(function(){
 				window.clientstore_indexeddb_ready = true;	
 			}, 500);
@@ -52,15 +52,15 @@ describe("ClientStoreInterfaceIndexedDB, ", function() {
   it("Set/Get item", function() {
   	waitsFor(function() { return window.clientstore_indexeddb_ready; });
     runs(function(){
-    	window.clientStoreInterfaceIndexedDB.setItem("test_table", "item_a", "A");
+    	ClientStore.setItem("test_clientstore_table", "my_item_a", "Aa");
     	window.result = undefined;
-    	window.clientStoreInterfaceIndexedDB.getItem("test_table", "item_a", function(res){
+    	ClientStore.getItem("test_clientstore_table", "my_item_a", function(res){
 				window.result = res;    		
     	});
     });
     waitsFor(function() { return window.clientstore_indexeddb_ready && window.result });
     runs(function(){
-    	expect(window.result).toEqual("A");
+    	expect(window.result).toEqual("Aa");
     });
     
   });
