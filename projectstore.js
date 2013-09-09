@@ -2,10 +2,8 @@
 Uses clientstore.js for local storage of projects and interfaces with Codewip web service api 
 */
 var ProjectStore = new function() {
-    this.init = function(size_in_mb, callback_success, callback_failure, callback_warning){
-    	ClientStore.init(size_in_mb, "cw_projects", callback_success, callback_failure, callback_warning);
-    	ClientStore.init(size_in_mb, "cw_openfiles", callback_success, callback_failure, callback_warning);
-    	ClientStore.init(size_in_mb, "cw_history", callback_success, callback_failure, callback_warning);
+    this.init = function(size_in_mb, callback_success, callback_failure){
+    	ClientStore.init(size_in_mb, "codewip", ["cw_projects", "cw_openfiles", "cw_history"], callback_success, callback_failure);
     };
     
     this.saveFile = function(obj){
@@ -25,7 +23,7 @@ var ProjectStore = new function() {
     	/*
     		Should save the file with state close
     	*/
-    }
+    };
     
     this.openFile = function(file_id, callback_success){
     	
@@ -56,6 +54,10 @@ var ProjectStore = new function() {
     	/*
     		Loads the project online and save locally and then calls _loadProjLocal on success (note that this can be a everlasing loop)
     	*/
-    }    
+    };  
+    
+    this.nuke = function(){
+    	ClientStoreUtilsRemoveIndexedDB("codewip");
+    };
     
 };
