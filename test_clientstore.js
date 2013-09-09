@@ -8,11 +8,11 @@ describe("ClientStoreInterfaceIndexedDB, ", function() {
   });
 
   afterEach(function() {
-  	ClientStoreUtilsRemoveIndexedDB(CLIENT_STORE_DATABASE_NAME);
+  	//ClientStoreUtilsRemoveIndexedDB(CLIENT_STORE_DATABASE_NAME);
   });	
   
   it("Set/Get item", function() {
-  	waitsFor(function() { return window.clientstore_indexeddb_ready });
+  	waitsFor(function() { return window.clientstore_indexeddb_ready; });
     runs(function(){
     	window.clientStoreInterfaceIndexedDB.setItem("test_table", "item_a", "A");
     	window.result = undefined;
