@@ -21,6 +21,7 @@ describe("Client store, ", function() {
     });
     waitsFor(function() { return window.clientstore_indexeddb_ready && window.result });
     runs(function(){
+    	expect(window.result).toEqual("A");
     });
     
   });
