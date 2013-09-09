@@ -5,18 +5,12 @@
 
 // http://caniuse.com/#feat=indexeddb
 
-
-CLIENT_STORE_BUFFER_NAME = "ClientStore";
-CLIENT_STORE_DATABASE_NAME = "ClientDatabase";
-
-
 function ClientStoreInterfaceIndexedDB (){
     //https://developer.mozilla.org/en-US/docs/IndexedDB/Using_IndexedDB
     this.init = function (size_in_mb, dbname, tables, callback_success, callback_failure){
         window.___local_storage_db = undefined;
         var self = this;
-        request = indexedDB.open(CLIENT_STORE_DATABASE_NAME);
-        var client_store_buffer_name = dbname;
+        request = indexedDB.open(dbname);
         request.onsuccess = function(e){
             window.___local_storage_db = e.target.result;
             if(callback_success){callback_success();}
@@ -71,8 +65,8 @@ function ClientStoreInterfaceIndexedDB (){
         var tx = window.___local_storage_db.transaction(store_name, mode);
         return tx.objectStore(store_name);
     },
-    this.clear = function (callback_success, callback_failure){
-        var store = this.getObjectStore(CLIENT_STORE_BUFFER_NAME, 'readwrite');
+    this.clear = function (d, callback_success, callback_failure){
+        var store = this.getObjectStore(d, 'readwrite');
         var req = store.clear();
         sessionStorage.clear();
         req.onsuccess = function(evt) {
@@ -91,6 +85,7 @@ function ClientStoreInterfaceIndexedDB (){
     this.getItem = function (d, n, callback_success, callback_failure){
     	var object_store = this.getObjectStore(d, "readwrite");
 			var request = object_store.get(n);
+			debugger;
 			request.onerror = function(event) {
 			  callback_failure();
 			  callback_success(undefined);
