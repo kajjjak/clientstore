@@ -80,4 +80,34 @@ describe("ProjectStore", function() {
     });
   });
   
+  it("Save/Open online files", function() {
+  	window.file_result = undefined;
+  	waitsFor(function() { return window.projectstore_indexeddb_ready; });
+    runs(function(){
+    	window.online_savefiles_result = undefined;
+    	ProjectStore._saveFilesOnline(window.projectstore_test_data2_uid, function(res){
+				window.online_savefiles_result = res;
+    	});
+    });
+    waitsFor(function() { return window.projectstore_indexeddb_ready && window.online_savefiles_result });
+    runs(function(){
+    	expect(window.online_savefiles_result).toEqual(window.projectstore_test_data2);
+    });
+  });
+  
+  it("Save/Open online project", function() {
+  	window.file_result = undefined;
+  	waitsFor(function() { return window.projectstore_indexeddb_ready; });
+    runs(function(){
+    	window.online_saveproject_result = undefined;
+    	ProjectStore._saveProjectOnline(window.projectstore_test_data2_uid, function(res){
+				window.online_saveproject_result = res;
+    	});
+    });
+    waitsFor(function() { return window.projectstore_indexeddb_ready && window.online_saveproject_result });
+    runs(function(){
+    	expect(window.online_saveproject_result).toEqual(window.projectstore_test_data2);
+    });
+  });
+  
 });
