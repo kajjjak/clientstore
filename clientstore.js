@@ -226,6 +226,9 @@ var ClientStore = new function() {
       this.db.clear();
     };
     
+    this.getAll = function(d, callback_success){
+    	this.db.getAll(d, callback_success);
+    };
 };
 
 function ClientStoreUtilsRemoveIndexedDB(databaseName){
