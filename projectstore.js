@@ -10,7 +10,7 @@ Project format is like this:
 var ProjectStore = new function() {
     this.init = function(size_in_mb, callback_success, callback_failure){
     	this.db_name = window.projectstore_databasename || "codewip";
-    	ClientStore	.init(size_in_mb, this.db_name, ["projects", "openfiles", "history"], callback_success, callback_failure);
+    	ClientStore.init(size_in_mb, this.db_name, ["projects", "openfiles", "history"], callback_success, callback_failure);
     };
     
     this.setConfig = function(obj, value){
@@ -75,6 +75,12 @@ var ProjectStore = new function() {
     		this.cacheFile(obj.files[i]);
     	}
     	this.setConfig(obj.config);
+    };
+    
+    this._packProject = function(project_id, callback_success){
+    	ClientStore.getAll("openfiles", function(items){
+    		
+    	});
     };
 
     this.openProject = function(project_id, callback_success, callback_failure){
