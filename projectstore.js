@@ -85,14 +85,14 @@ var ProjectStore = new function() {
     		});
     	}else{
     		ClientStore.getAll("openfiles", function(items){
-    			var itm;
+    			var item;
     			if (packed_type == "project"){
     				callback_success(items);
     			} else {
     				for (var i in items){
-    					itm = items[i];
+    					item = items[i];
     					if (item.key != "config"){
-    						items.push(itm);
+    						items.push(item);
     					}
     				}
     			}
