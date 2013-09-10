@@ -12,7 +12,7 @@ Project format is like this:
 var ProjectStore = new function() {
     this.init = function(size_in_mb, callback_success, callback_failure){
     	this.db_name = window.projectstore_databasename || "codewip";
-    	ClientStore.init(size_in_mb, this.db_name, ["projects", "openfiles", "history"], callback_success, callback_failure);
+    	ClientStore	.init(size_in_mb, this.db_name, ["projects", "openfiles", "history"], callback_success, callback_failure);
     };
     
     this.setTarget = function(attr, value){
@@ -83,11 +83,14 @@ var ProjectStore = new function() {
     
     this._unpackProject = function(obj){
     	/* Takes a project and stores the project data files into files cache*/
-    	if((!obj.files) || (!obj.meta) || (!obj.uid) || (!obj.target) || (!obj.config)){ throw "Missing property while unpacking"; }
+    	if((!obj.files) || (!obj.meta) || (!obj.uid) || (!obj.target) || (!obj.config)){ throw "Missing property while unpacking. " + JSON.stringify(obj); }
     	var f;
     	for (var i in obj.files){
     		this.cacheFile(obj.files[i]);
     	}
+    	if(!obj.meta.uid){obj.meta.uid = 'meta'};
+    	if(!obj.target.uid){obj.target.uid = 'target'};
+    	if(!obj.config.uid){obj.config.uid = 'config'};
     	this.cacheFile(obj.meta);
     	this.cacheFile(obj.target);
     	this.cacheFile(obj.config);
