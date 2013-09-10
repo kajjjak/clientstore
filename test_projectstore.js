@@ -1,3 +1,4 @@
+window.projectstore_databasename = "codewip_testdb";
 function createProjectDB(){
 	ProjectStore.nuke();
 	window.projectstore_indexeddb_ready = false;	
