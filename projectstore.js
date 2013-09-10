@@ -15,25 +15,32 @@ var ProjectStore = new function() {
     	ClientStore	.init(size_in_mb, this.db_name, ["projects", "openfiles", "history"], callback_success, callback_failure);
     };
     
-    this.setTarget = function(attr, value){
+    
+    this.setConfig = function(obj, value){
+    	/*
+    		Will queue for save config data (only online)
+    	*/
+    	if(typeof(obj) == "string"){}
+    	else{ obj.uid = 'config';}
+    	this.saveFile(obj);
+    };
+    
+    this.setTarget = function(obj, value){
     	/*
     		Will queue for save target data (only online)
     	*/
-    	
+    	if(typeof(obj) == "string"){}
+    	else{ obj.uid = 'target';}
+    	this.saveFile(obj);
     };
-    
-    this.getTarget = function(attr){
-    	
-    };
-    
-    this.setMeta = function(attr, value){
+
+		this.setMeta = function(obj, value){
     	/*
     		Will queue for save meta data (only online)
     	*/
-    };
-    
-    this.getMeta = function(attr, default_value){
-    	
+    	if(typeof(obj) == "string"){}
+    	else{ obj.uid = 'meta';}
+    	this.saveFile(obj);    	
     };
     
     this.saveFile = function(obj, state){
@@ -88,12 +95,9 @@ var ProjectStore = new function() {
     	for (var i in obj.files){
     		this.cacheFile(obj.files[i]);
     	}
-    	if(!obj.meta.uid){obj.meta.uid = 'meta'};
-    	if(!obj.target.uid){obj.target.uid = 'target'};
-    	if(!obj.config.uid){obj.config.uid = 'config'};
-    	this.cacheFile(obj.meta);
-    	this.cacheFile(obj.target);
-    	this.cacheFile(obj.config);
+    	this.setMeta(obj.meta);
+    	this.setTarget(obj.target);
+    	this.setConfig(obj.config);
     };
 
     this.openProject = function(project_id, callback_success, callback_failure){
