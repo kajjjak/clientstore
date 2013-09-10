@@ -1,11 +1,12 @@
-window.projectstore_databasename = "codewip_testdb";
+window.projectstore_databasename = "codewip_testdb2";
 
 window.projectstore_test_data1_uid = "myid";
-window.projectstore_test_data1 = {uid: window.projectstore_test_data1_uid, data: "mydata"};
+window.projectstore_test_data1 = {uid: window.projectstore_test_data1_uid, config : { uid : 'config' }, files : [ ], meta : { uid : 'meta' }, target : { uid : 'target' }};
 window.projectstore_test_data2_uid = "myfileid";
-window.projectstore_test_data2 = {uid:window.projectstore_test_data2_uid, data:"mydata"};
+window.projectstore_test_data2 = {uid: window.projectstore_test_data2_uid, config : { uid : 'config' }, files : [ ], meta : { uid : 'meta' }, target : { uid : 'target' }};
 
 function createProjectDB(){
+	console.info("Nuking DB " + window.projectstore_databasename);
 	ProjectStore.nuke();
 	window.projectstore_indexeddb_ready = false;	
 	setTimeout(function(){
@@ -24,6 +25,8 @@ function createProjectDB(){
 }
 
 describe("ProjectStore", function() {
+	createProjectDB();
+	
 	beforeEach(function() {
   });
 
@@ -31,7 +34,6 @@ describe("ProjectStore", function() {
   });	
   
   it("Save/Open local project", function() {
-  	createProjectDB();
   	waitsFor(function() { return window.projectstore_indexeddb_ready; });
     runs(function(){
     	console.info("Runs Save/Open local project");
@@ -62,5 +64,4 @@ describe("ProjectStore", function() {
     	expect(window.file_result).toEqual(window.projectstore_test_data2);
     });
   });
-
 });
