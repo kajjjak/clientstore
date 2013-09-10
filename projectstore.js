@@ -83,6 +83,7 @@ var ProjectStore = new function() {
     		this.openFile("config", function(config_file){
     			callback_success(config_file);
     		});
+    	}else{
     		ClientStore.getAll("openfiles", function(items){
     			var itm;
     			if (packed_type == "project"){
@@ -91,13 +92,11 @@ var ProjectStore = new function() {
     				for (var i in items){
     					itm = items[i];
     					if (item.key != "config"){
-    						items.push(item);
+    						items.push(itm);
     					}
     				}
     			}
-    		});
-    	}else{
-    		
+    		});    		
     	}
     };
 
@@ -137,7 +136,7 @@ var ProjectStore = new function() {
 				  url: url,
 				  contentType: 'application/json; charset=utf-8',
 				  dataType: 'text',
-				  data: packet,
+				  data: packed,
 				  success: function(data){
 				  	/*
 				    var p = JSON.parse(data);
