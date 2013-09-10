@@ -49,7 +49,7 @@ function ClientStoreInterfaceIndexedDB (){
             });
         }
     },
-    this.getStorageSize = function(callback_success, callback_failure){
+    this.getSize = function(callback_success, callback_failure){
         // Request storage usage and capacity left
         if(window.webkitStorageInfo){
           window.webkitStorageInfo.queryUsageAndQuota(
@@ -93,6 +93,20 @@ function ClientStoreInterfaceIndexedDB (){
 			  else {callback_failure(undefined);}
 			};        
     },
+    this.getAll = function(d, callback_success, callback_failure){
+			var items = [];
+			var object_store = this.getObjectStore(d, 'readwrite');
+			object_store.openCursor().onsuccess = function(event) {
+			  var cursor = event.target.result;
+			  if (cursor) {
+			    items.push(cursor.value);
+			    cursor.continue();
+			  }
+			  else {
+			    callback_success(items);
+			  }
+			};    	
+    },
     this.removeItem = function(d, k){
         var request = this.getObjectStore(d, 'readwrite').delete(k);
         request.onerror = function(event) {
@@ -126,7 +140,7 @@ function ClientStoreInterfaceWebSQL (){
     this.setSize = function(){
     	/*not supported in websql*/
     },
-    this.getStorageSize = function(callback_success, callback_failure){
+    this.getSize = function(callback_success, callback_failure){
     	callback_failure(-1);
     },
     this.setItem = function (k, v){
