@@ -1,9 +1,9 @@
-window.projectstore_databasename = "codewip_testdb2";
+window.projectstore_databasename = "codewip_testdb";
 
 window.projectstore_test_data1_uid = "myid";
-window.projectstore_test_data1 = {uid: window.projectstore_test_data1_uid, config : { uid : 'config' }, files : [ ], meta : { uid : 'meta' }, target : { uid : 'target' }};
+window.projectstore_test_data1 = {uid: window.projectstore_test_data1_uid, config : { uid : 'config' }, files : [ ]};
 window.projectstore_test_data2_uid = "myfileid";
-window.projectstore_test_data2 = {uid: window.projectstore_test_data2_uid, config : { uid : 'config' }, files : [ ], meta : { uid : 'meta' }, target : { uid : 'target' }};
+window.projectstore_test_data2 = {uid: window.projectstore_test_data2_uid, config : { uid : 'config' }, files : [ ]};
 
 function createProjectDB(){
 	console.info("Nuking DB " + window.projectstore_databasename);
