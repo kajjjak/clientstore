@@ -4,8 +4,6 @@ Project format is like this:
 {
 	files:{ SourceFile },
 	uid: xxxx,
-	meta: {},
-	targets: {},
 	config: {}
 }
 */
@@ -15,7 +13,6 @@ var ProjectStore = new function() {
     	ClientStore	.init(size_in_mb, this.db_name, ["projects", "openfiles", "history"], callback_success, callback_failure);
     };
     
-    
     this.setConfig = function(obj, value){
     	/*
     		Will queue for save config data (only online)
@@ -24,25 +21,7 @@ var ProjectStore = new function() {
     	else{ obj.uid = 'config';}
     	this.saveFile(obj);
     };
-    
-    this.setTarget = function(obj, value){
-    	/*
-    		Will queue for save target data (only online)
-    	*/
-    	if(typeof(obj) == "string"){}
-    	else{ obj.uid = 'target';}
-    	this.saveFile(obj);
-    };
 
-		this.setMeta = function(obj, value){
-    	/*
-    		Will queue for save meta data (only online)
-    	*/
-    	if(typeof(obj) == "string"){}
-    	else{ obj.uid = 'meta';}
-    	this.saveFile(obj);    	
-    };
-    
     this.saveFile = function(obj, state){
     	/*
     		Should save all open files and queue to save it online as well
@@ -90,13 +69,11 @@ var ProjectStore = new function() {
     
     this._unpackProject = function(obj){
     	/* Takes a project and stores the project data files into files cache*/
-    	if((!obj.files) || (!obj.meta) || (!obj.uid) || (!obj.target) || (!obj.config)){ throw "Missing property while unpacking. " + JSON.stringify(obj); }
+    	if((!obj.uid) || (!obj.files) || (!obj.config)){ throw "Missing property while unpacking. " + JSON.stringify(obj); }
     	var f;
     	for (var i in obj.files){
     		this.cacheFile(obj.files[i]);
     	}
-    	this.setMeta(obj.meta);
-    	this.setTarget(obj.target);
     	this.setConfig(obj.config);
     };
 
@@ -127,7 +104,36 @@ var ProjectStore = new function() {
 	    	}
 	    );    	    	
     };
-    
+
+    this._saveProjectOnline = function(project_id, callback_success, callback_failure){
+			var ops = options;
+			var self = this;
+			self._packProject(project_id, function(packed_project){
+			
+				fetchJSON({
+				  type: 'POST',
+				  url: '/api/projects',
+				  contentType: 'application/json; charset=utf-8',
+				  dataType: 'text',
+				  data: packed_project,
+				  success: function(data){
+				    var p = JSON.parse(data);
+				    if (p.error){
+				      ops.showUserMessage({"message": "Project stored failed: " + p.error, "level": -2});
+				    } else{
+				      ops.showUserMessage({"message": "Project " + method.toLowerCase() + " successfully online", "level": 1});
+				      if(ops.onSavedOnlineSuccess){ops.onSavedOnlineSuccess();}
+				    }
+				  },
+				  error: function(e){
+				    ops.showUserMessage({"message": "Project stored failed. Could not post data due to error '" + e.statusText + "' (" + e.status + ") calling " + ops.url, "level": -2});
+				  }
+				});   			
+			
+			}); 	
+    };
+	
+
     this._loadProjectOnline = function(project_id, callback_success, callback_failure){
     	/*
     		Loads the project online and save locally and then calls _loadProjLocal on success (note that this can be a everlasing loop)
