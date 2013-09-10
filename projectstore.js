@@ -1,14 +1,44 @@
 /* 
 Uses clientstore.js for local storage of projects and interfaces with Codewip web service api 
+Project format is like this:
+{
+	files:{ SourceFile },
+	uid: xxxx,
+	meta: {},
+	targets: {},
+	config: {}
+}
 */
 var ProjectStore = new function() {
     this.init = function(size_in_mb, callback_success, callback_failure){
-    	ClientStore.init(size_in_mb, "codewip", ["projects", "openfiles", "history"], callback_success, callback_failure);
+    	this.db_name = window.projectstore_databasename || "codewip";
+    	ClientStore.init(size_in_mb, this.db_name, ["projects", "openfiles", "history"], callback_success, callback_failure);
+    };
+    
+    this.setTarget = function(attr, value){
+    	/*
+    		Will queue for save target data (only online)
+    	*/
+    	
+    };
+    
+    this.getTarget = function(attr){
+    	
+    };
+    
+    this.setMeta = function(attr, value){
+    	/*
+    		Will queue for save meta data (only online)
+    	*/
+    };
+    
+    this.getMeta = function(attr, default_value){
+    	
     };
     
     this.saveFile = function(obj, state){
     	/*
-    		Should save all open files
+    		Should save all open files and queue to save it online as well
     	*/
     	if (!state){ state = "saved"; }
     	if (!obj.uid){ throw "ProjectStore.saveFile expected a .uid in object"; }
@@ -43,6 +73,7 @@ var ProjectStore = new function() {
     this.saveProject = function(obj){
     	if (!obj.uid){ throw "ProjectStore.saveProject expected a .uid in object"; }
     	ClientStore.setItem("projects", obj.uid, JSON.stringify(obj));
+    	//save online
     };
     
     this.closeProject = function(obj){
@@ -50,16 +81,22 @@ var ProjectStore = new function() {
     	this.saveProj(obj);
     };
     
-    this._cacheProject = function(obj){
-    	/* Takes a project and stores the project files into cache*/
-    	
+    this._unpackProject = function(obj){
+    	/* Takes a project and stores the project data files into files cache*/
+    	if((!obj.files) || (!obj.meta) || (!obj.uid) || (!obj.target)){ throw "Missing property while unpacking"; }
+    	var f;
+    	for (var i in obj.files){
+    		this.cacheFile(obj.files[i]);
+    	}
+    	this.cacheFile(obj.meta);
+    	this.cacheFile(obj.target);
+    	this.cacheFile(obj.config);
     };
-    
+
     this.openProject = function(project_id, callback_success, callback_failure){
     	/*
     		call this._loadProjLocal with callback_failure call that will try to load from server
     	*/
-    	var self = this;
     	this._loadProjectLocal(project_id,
     	callback_success, 
     	function(){
@@ -71,9 +108,11 @@ var ProjectStore = new function() {
     	/*
     		Will check if server_project_data is the same project we are trying to open and load that if it is newer
     	*/
+    	var self = this;
     	ClientStore.getItem("projects", project_id,
 	    	function(r){
 	    		var p = JSON.parse(r);
+	    		self._unpackProject(p);
 	    		callback_success(p);
 	    	}, 
 	    	function(){
@@ -94,9 +133,10 @@ var ProjectStore = new function() {
 			  contentType: 'application/json; charset=utf-8',
 			  dataType: 'text',
 			  success: function(data){
-			    json_data = JSON.parse(data);
-			    if (json_data.error){
-			      ops.showUserMessage({"message": "Project stored failed: " + json_data.error, "level": -2});
+			    var p = JSON.parse(data);
+			    self._unpackProject(p);
+			    if (p.error){
+			      ops.showUserMessage({"message": "Project stored failed: " + p.error, "level": -2});
 			    } else{
 			      ops.showUserMessage({"message": "Project " + method.toLowerCase() + " successfully online", "level": 1});
 			      if(ops.onSavedOnlineSuccess){ops.onSavedOnlineSuccess();}
@@ -110,7 +150,7 @@ var ProjectStore = new function() {
     };  
     
     this.nuke = function(){
-    	ClientStoreUtilsRemoveIndexedDB("codewip");
+    	ClientStoreUtilsRemoveIndexedDB(this.db_name);
     };
     
 };
