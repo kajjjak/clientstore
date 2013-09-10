@@ -83,7 +83,7 @@ var ProjectStore = new function() {
     
     this._unpackProject = function(obj){
     	/* Takes a project and stores the project data files into files cache*/
-    	if((!obj.files) || (!obj.meta) || (!obj.uid) || (!obj.target)){ throw "Missing property while unpacking"; }
+    	if((!obj.files) || (!obj.meta) || (!obj.uid) || (!obj.target) || (!obj.config)){ throw "Missing property while unpacking"; }
     	var f;
     	for (var i in obj.files){
     		this.cacheFile(obj.files[i]);
