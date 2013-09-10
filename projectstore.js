@@ -77,10 +77,28 @@ var ProjectStore = new function() {
     	this.setConfig(obj.config);
     };
     
-    this._packProject = function(project_id, callback_success){
-    	ClientStore.getAll("openfiles", function(items){
+    this._packProject = function(project_id, packed_type, callback_success){
+    	/* packed_type: project, files, config */
+    	if (packed_type == "config"){
+    		this.openFile("config", function(config_file){
+    			callback_success(config_file);
+    		});
+    		ClientStore.getAll("openfiles", function(items){
+    			var itm;
+    			if (packed_type == "project"){
+    				callback_success(items);
+    			} else {
+    				for (var i in items){
+    					itm = items[i];
+    					if (item.key != "config"){
+    						items.push(item);
+    					}
+    				}
+    			}
+    		});
+    	}else{
     		
-    	});
+    	}
     };
 
     this.openProject = function(project_id, callback_success, callback_failure){
@@ -111,18 +129,17 @@ var ProjectStore = new function() {
 	    );    	    	
     };
 
-    this._saveProjectOnline = function(project_id, callback_success, callback_failure){
-			var ops = options;
+    this._saveOnline = function(project_id, packet_type, url, callback_success, callback_failure){
 			var self = this;
-			self._packProject(project_id, function(packed_project){
-			
+			self._packProject(project_id, packet_type, function(packed){
 				fetchJSON({
 				  type: 'POST',
-				  url: '/api/projects',
+				  url: url,
 				  contentType: 'application/json; charset=utf-8',
 				  dataType: 'text',
-				  data: packed_project,
+				  data: packet,
 				  success: function(data){
+				  	/*
 				    var p = JSON.parse(data);
 				    if (p.error){
 				      ops.showUserMessage({"message": "Project stored failed: " + p.error, "level": -2});
@@ -130,16 +147,29 @@ var ProjectStore = new function() {
 				      ops.showUserMessage({"message": "Project " + method.toLowerCase() + " successfully online", "level": 1});
 				      if(ops.onSavedOnlineSuccess){ops.onSavedOnlineSuccess();}
 				    }
+				    */
+				    alert("Done OK");
 				  },
 				  error: function(e){
-				    ops.showUserMessage({"message": "Project stored failed. Could not post data due to error '" + e.statusText + "' (" + e.status + ") calling " + ops.url, "level": -2});
+				    //ops.showUserMessage({"message": "Project stored failed. Could not post data due to error '" + e.statusText + "' (" + e.status + ") calling " + ops.url, "level": -2});
+				    alert("Done failure");
 				  }
 				});   			
-			
 			}); 	
     };
 	
-
+    this._saveFilesOnline = function(project_id, callback_success, callback_failure){
+			this._saveOnline(project_id, "files", "/api/project/files/", callback_success, callback_failure);	
+    };
+	
+    this._saveConfigOnline = function(project_id, callback_success, callback_failure){
+			this._saveOnline(project_id, "config", "/api/project/config/", callback_success, callback_failure);	
+    };
+	
+    this._saveProjectOnline = function(project_id, callback_success, callback_failure){
+			this._saveOnline(project_id, "project", "/api/project/", callback_success, callback_failure);	
+    };
+	
     this._loadProjectOnline = function(project_id, callback_success, callback_failure){
     	/*
     		Loads the project online and save locally and then calls _loadProjLocal on success (note that this can be a everlasing loop)
