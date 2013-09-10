@@ -79,7 +79,7 @@ describe("ClientStore", function() {
   });
 
   afterEach(function() {
-  });	
+  });
   
   it("Set/Get item", function() {
   	waitsFor(function() { return window.clientstore_indexeddb_ready; });
