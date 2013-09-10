@@ -64,4 +64,20 @@ describe("ProjectStore", function() {
     	expect(window.file_result).toEqual(window.projectstore_test_data2);
     });
   });
+  
+  it("Save/Open online config", function() {
+  	window.file_result = undefined;
+  	waitsFor(function() { return window.projectstore_indexeddb_ready; });
+    runs(function(){
+    	window.online_saveconfig_result = undefined;
+    	ProjectStore._saveConfigOnline(window.projectstore_test_data2_uid, function(res){
+				window.online_saveconfig_result = res;
+    	});
+    });
+    waitsFor(function() { return window.projectstore_indexeddb_ready && window.online_saveconfig_result });
+    runs(function(){
+    	expect(window.online_saveconfig_result).toEqual(window.projectstore_test_data2);
+    });
+  });
+  
 });
