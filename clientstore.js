@@ -120,15 +120,17 @@ function ClientStoreInterfaceIndexedDB (){
 
 
 function ClientStoreInterfaceWebSQL (){
-    this.init = function (size_in_mb, dbname, callback_success, callback_failure){
+    this.init = function (size_in_mb, dbname, tables, callback_success, callback_failure){
       	this.___local_storage_db = openDatabase(dbname, '1.0', dbname, size_in_mb * 1024 * 1024);
         this.___local_storage_db.transaction(function(tx) {
-          tx.executeSql('CREATE TABLE IF NOT EXISTS buffer (id unique, text)', function(){
-            if(callback_success){callback_success();}
-          });
+	      	for (var i in tables){
+	          tx.executeSql('CREATE TABLE IF NOT EXISTS ' + tables[i] + ' (id unique, text)', function(){
+	            if(callback_success){callback_success();}
+	          });
+	      	}        	
         });
     },
-    this.clear = function (callback_success){
+/*    this.clear = function (callback_success){
         var sql = 'DELETE FROM buffer';
         this.___local_storage_db.transaction(function(tx){
             tx.executeSql(sql);
@@ -137,21 +139,20 @@ function ClientStoreInterfaceWebSQL (){
             }
         });
     },
-    this.setSize = function(){
+*/    this.setSize = function(){
     	/*not supported in websql*/
     },
     this.getSize = function(callback_success, callback_failure){
     	callback_failure(-1);
     },
-    this.setItem = function (k, v){
-        this.___local_storage_db.transaction(function(tx) {tx.executeSql('INSERT INTO buffer (id, text) VALUES (?, ?)', [k, v]);});
+    this.setItem = function (d, k, v){
+        this.___local_storage_db.transaction(function(tx) {tx.executeSql('INSERT INTO ? (id, text) VALUES (?, ?)', [d, k, v]);});
     },
-    this.getItem = function (k, default_value, callback_success, callback_failure){
+    this.getItem = function (d, k, callback_success, callback_failure){
         var key = k;
-        var v = default_value;
         this.___local_storage_db.transaction(function(tx) {
             var value = v;
-            tx.executeSql('SELECT * FROM buffer WHERE id=?', [key], function(tx, results) {
+            tx.executeSql('SELECT * FROM ? WHERE id=?', [d, key], function(tx, results) {
                 var len = results.rows.length, i;
                 var v = value;
                 for (i = 0; i < len; i++) {
@@ -164,7 +165,7 @@ function ClientStoreInterfaceWebSQL (){
         });
     },
     this.removeItem = function(d, k){
-        this.clear();
+        this.___local_storage_db.transaction(function(tx) {tx.executeSql('DELETE FROM ? WHERE id="?"', [d, k]);});
     };
 }
 
@@ -184,12 +185,10 @@ var ClientStore = new function() {
         var self = this;        
        	var use_db_indexeddb = Modernizr.indexeddb;
        	var use_db_websqldatabase = Modernizr.websqldatabase;
-       	/*
        	if(use_db){
        		use_db_indexeddb = (use_db == this.USE_DB_INDEXEDDB);
        		use_db_websqldatabase = (use_db == this.USE_DB_WEBSQLDB);
        	}
-       	*/
         if (use_db_indexeddb){
           this.db = new ClientStoreInterfaceIndexedDB();
         }else{
@@ -238,5 +237,14 @@ function ClientStoreUtilsRemoveIndexedDB(databaseName){
 	};
 	req.onerror = function () {
 	    console.log("Couldn't delete database");
+	}
+}
+
+function ClientStoreUtilsRemoveWebSQLDB(databaseName, tables){
+	var db = openDatabase(databaseName, '1.0', databaseName, 2 * 1024 * 1024);
+	for (var i in tables){
+		db.transaction(function (tx) {
+		  tx.executeSql('DROP TABLE ' + tables[i]);
+		});	
 	}
 }
