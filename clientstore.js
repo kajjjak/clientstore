@@ -87,7 +87,7 @@ function ClientStoreInterfaceIndexedDB (){
     	var object_store = this.getObjectStore(d, "readwrite");
 			var request = object_store.get(n);
 			request.onerror = function(event) {
-			  callback_failure();
+			  callback_failure(event);
 			};
 			request.onsuccess = function(event) {
 			  if (request.result){callback_success(request.result.value);}
