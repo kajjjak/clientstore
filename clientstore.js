@@ -95,12 +95,12 @@ function ClientStoreInterfaceIndexedDB (){
 			};        
     },
     this.getAll = function(d, callback_success, callback_failure){
-			var items = [];
+			var items = {};
 			var object_store = this.getObjectStore(d, 'readwrite');
 			object_store.openCursor().onsuccess = function(event) {
 			  var cursor = event.target.result;
 			  if (cursor) {
-			    items.push(cursor.value);
+			    items[cursor.value.key] = cursor.value.value;
 			    cursor.continue();
 			  }
 			  else {
@@ -173,8 +173,22 @@ function ClientStoreInterfaceWebSQL (){
             });
         });
     },
-    this.removeItem = function(d, k){
-        this.___local_storage_db.transaction(function(tx) {tx.executeSql('DELETE FROM ? WHERE id="?"', [d, k]);});
+    this.getAll = function (d, callback_success, callback_failure){
+        this.___local_storage_db.transaction(function(tx) {
+            tx.executeSql('SELECT * FROM ' + d, [], function(tx, results) {
+                var len = results.rows.length, i;
+                var itms = {};
+                for (i = 0; i < len; i++) {
+                    itms[results.rows.item(i).id] = results.rows.item(i).text;
+                }
+                if(callback_success){
+                    callback_success(itms);
+                }
+            });
+        });
+    },
+    this.removeItem = function(d, k, callback_success, callback_failure){
+        this.___local_storage_db.transaction(function(tx) {tx.executeSql('DELETE FROM ' + d + ' WHERE id=?', [k], callback_success, callback_failure);});
     };
 }
 
