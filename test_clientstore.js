@@ -32,9 +32,9 @@ function createWebSQLDB(){
 
 	}, 1500);	
 }
-//createIndexedDB();
+createIndexedDB();
 createWebSQLDB();
-/*
+
 describe("ClientStoreInterfaceIndexedDB", function() {
 	
 	beforeEach(function() {
@@ -70,7 +70,7 @@ describe("ClientStoreInterfaceIndexedDB", function() {
     });
     waitsFor(function() { return window.clientstore_indexeddb_ready && window.client_allitems_result });
     runs(function(){
-    	expect(window.client_allitems_result).toEqual([ { key : 'item_a', value : 'A' }, { key : 'item_b', value : 'B' } ]);
+    	expect(window.client_allitems_result).toEqual({'item_a': 'A', 'item_b': 'B'});
     });    
   });
   
@@ -119,7 +119,7 @@ describe("ClientStoreIndexedDB", function() {
     });
   });
 });
-*/
+
 describe("ClientStoreInterfaceWebSQLDB", function() {
 	
 	beforeEach(function() {
@@ -155,12 +155,12 @@ describe("ClientStoreInterfaceWebSQLDB", function() {
     });
     waitsFor(function() { return window.clientstore_websqldb_ready && window.client_allitems_result });
     runs(function(){
-    	expect(window.client_allitems_result).toEqual([ { key : 'item_a', value : 'A' }, { key : 'item_b', value : 'B' } ]);
+    	expect(window.client_allitems_result).toEqual({'item_a': 'A', 'item_b': 'B'});
     });    
   });
   
 });
-/*
+
 describe("ClientStoreWebSQL", function() {
 	
 	beforeEach(function() {
@@ -205,7 +205,6 @@ describe("ClientStoreWebSQL", function() {
     });
   });
 });
-*/
 
 
 /*
