@@ -8,6 +8,7 @@
 function ClientStoreInterfaceIndexedDB (){
     //https://developer.mozilla.org/en-US/docs/IndexedDB/Using_IndexedDB
     this.init = function (size_in_mb, dbname, tables, callback_success, callback_failure){
+    		console.info("Initializing client store indexeddb");
         window.___local_storage_db = undefined;
         var self = this;
         request = indexedDB.open(dbname);
@@ -78,7 +79,7 @@ function ClientStoreInterfaceIndexedDB (){
           if(callback_failure){callback_failure();}
         };
     },
-    this.setItem = function (d, n, v){
+    this.setItem = function (d, n, v, callback_success, callback_failure){
         var object_store = this.getObjectStore(d, "readwrite");
         object_store.add({"key":n, "value": v});
     },
@@ -121,13 +122,15 @@ function ClientStoreInterfaceIndexedDB (){
 
 function ClientStoreInterfaceWebSQL (){
     this.init = function (size_in_mb, dbname, tables, callback_success, callback_failure){
+    		console.info("Initializing client store websql");
       	this.___local_storage_db = openDatabase(dbname, '1.0', dbname, size_in_mb * 1024 * 1024);
         this.___local_storage_db.transaction(function(tx) {
 	      	for (var i in tables){
 	          tx.executeSql('CREATE TABLE IF NOT EXISTS ' + tables[i] + ' (id unique, text)', function(){
-	            if(callback_success){callback_success();}
+	            
 	          });
-	      	}        	
+	      	}
+	      	if(callback_success){callback_success();}
         });
     },
 /*    this.clear = function (callback_success){
@@ -139,22 +142,28 @@ function ClientStoreInterfaceWebSQL (){
             }
         });
     },
-*/    this.setSize = function(){
+*/
+		this.setSize = function(){
     	/*not supported in websql*/
     },
     this.getSize = function(callback_success, callback_failure){
     	callback_failure(-1);
     },
-    this.setItem = function (d, k, v){
-        this.___local_storage_db.transaction(function(tx) {tx.executeSql('INSERT INTO ? (id, text) VALUES (?, ?)', [d, k, v]);});
+    this.setItem = function (d, k, v, callback_success, callback_failure){
+        this.___local_storage_db.transaction(function(tx) {
+        	tx.executeSql(
+        		'INSERT INTO ' + d + ' (id, text) VALUES (?, ?)',
+        		[k, v],
+        		callback_success,
+        		callback_failure);
+        });
     },
     this.getItem = function (d, k, callback_success, callback_failure){
         var key = k;
         this.___local_storage_db.transaction(function(tx) {
-            var value = v;
-            tx.executeSql('SELECT * FROM ? WHERE id=?', [d, key], function(tx, results) {
+            tx.executeSql('SELECT * FROM ' + d + ' WHERE id=?', [key], function(tx, results) {
                 var len = results.rows.length, i;
-                var v = value;
+                var v;
                 for (i = 0; i < len; i++) {
                     v = results.rows.item(i).text;
                 }
@@ -209,8 +218,8 @@ var ClientStore = new function() {
   		this.db.getSize(callback_success, callback_failure);
     };
     
-    this.setItem = function(d, k, v){
-      this.db.setItem(d, k, v);
+    this.setItem = function(d, k, v, callback_success, callback_failure){
+      this.db.setItem(d, k, v, callback_success, callback_failure);
     };
 
     this.getItem = function(d, k, callback_success, callback_failure){
