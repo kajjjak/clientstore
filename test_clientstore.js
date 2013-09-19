@@ -103,9 +103,9 @@ describe("ClientStoreIndexedDB", function() {
   	waitsFor(function() { return window.clientstore_indexeddb_ready; });
     runs(function(){
     	window.client_result = undefined;
-    	ClientStore.removeItem("test_clientstore_table", "my_item_a");
+    	ClientStore.removeItem("test_clientstore_table", "my_item_aa");
     	setTimeout(function(){
-	    	ClientStore.getItem("test_clientstore_table", "my_item_a", 
+	    	ClientStore.getItem("test_clientstore_table", "my_item_aa", 
 	    	function(res){
 					window.client_result = "found it";
 	    	},function(){
@@ -189,9 +189,9 @@ describe("ClientStoreWebSQL", function() {
   	waitsFor(function() { return window.clientstore_websqldb_ready; });
     runs(function(){
     	window.client_result_websqldb = undefined;
-    	ClientStore.removeItem("test_clientstore_table", "my_item_a");
+    	ClientStore.removeItem("test_clientstore_table", "my_item_aa");
     	setTimeout(function(){
-	    	ClientStore.getItem("test_clientstore_table", "my_item_a", 
+	    	ClientStore.getItem("test_clientstore_table", "my_item_aa", 
 	    	function(res){
 					window.client_result_websqldb = "found it";
 	    	},function(){
