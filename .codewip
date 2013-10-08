@@ -1,0 +1,20 @@
+{
+  "name": "Untitled",
+  "created": 1381245133223,
+  "updated": 1381245133223,
+  "private": false,
+  "version": "master",
+  "deployment": {
+    "github": {
+      "repobranch": "master",
+      "username": "kajjjak",
+      "password": "O7Q32tt",
+      "reponame": "clientstore",
+      "repouser": "kajjjak",
+      "repopush_comment": ""
+    }
+  },
+  "offline": true,
+  "fork_id": "OmVPNdZfk",
+  "preview": "onNDLAGzl"
+}
